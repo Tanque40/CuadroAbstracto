@@ -87,7 +87,7 @@ int main( void ) {
 
 	IndexBuffer ib( indices, sizeof( indices ) );
 
-	Shader mainShader( "res/shaders/template.vs", "res/shaders/template.fs" );
+	Shader mainShader( "res/shaders/CuadroAbstracto.vs", "res/shaders/CuadroAbstracto.fs" );
 
 	// Just write the direction of your Texture
 	Texture texture1( "res/textures/nether_brick.png" );
@@ -106,6 +106,7 @@ int main( void ) {
 
 		glfwGetFramebufferSize( window, &width, &height );
 		ratio = width / ( float ) height;
+		glm::vec3 screenResolution( ( float ) width, ( float ) height, 0.0f );
 
 		glViewport( 0, 0, width, height );
 

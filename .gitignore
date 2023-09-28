@@ -5,7 +5,7 @@
 **.vcxproj.**
 **/x64/**
 bin/**
-AdvancedProjectComputerGraphics/vendor/Glad/bin/**
+CuadroAbstracto/vendor/Glad/bin/**
 **/bin-int/**
 
 # Prerequisites
