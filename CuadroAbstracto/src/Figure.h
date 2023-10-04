@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <array>
 #include <glm/glm.hpp>
 
 #include "VertexArray.h"
@@ -16,18 +17,20 @@ enum FigureType {
 
 struct Vertex {
 	glm::vec3 coordinates;	// X, Y, Z
-	glm::vec1 figureType;	// 0: To Square, 1: To Circle
 	glm::vec4 colors;		// R, G, B, A
 	glm::vec2 textureCoords;// X, Y
-	glm::vec1 textureBool;	// 0: If don't use Texture, 1: If uses
+	float textureBool;	// 0: If don't use Texture, 1: If uses
+	float figureType;	// 0: Triangle, 1: Square, 2: Circle, 3: Donut
 };
 
 class Figure {
 private:
-	VertexArray va;
-	IndexBuffer ib;
-	VertexBuffer vb;
-	VertexBufferLayout layout;
+	std::vector<Vertex> figurePropierties;
+	std::vector<unsigned int> indices;
+	FigureType type;
+
+public:
+	static const unsigned int VertexSize = sizeof( Vertex ) / sizeof( float ); // Means the positions of each 
 
 public:
 	/// <summary>
@@ -39,10 +42,17 @@ public:
 	/// Constructor that make a figure centered in the coordinates positions
 	/// </summary>
 	/// <param name="figureType">TRIANGLE = 0, SQUARE = 1, CIRCLE = 2, DONUT = 3 </param>
-	/// <param name="coordinates">The position of the center of the image</param>
-	Figure( FigureType figureType, glm::vec3 coordinates );
+	/// <param name="centerCoordinates">The position of the center of the image</param>
+	Figure( FigureType figureType, glm::vec3 centerCoordinates );
 
+	~Figure();
 
+	float* getVertex( int position );
+	int getVertexSize( int position );
+	FigureType getType();
+
+	void scale( float* scalar );
+	void scale( float* scalarX, float* scalarY );
 
 	/// <summary>
 	/// Convert all figures to a simple float array
@@ -50,4 +60,7 @@ public:
 	/// <param name="figures">the vector of all the figures</param>
 	/// <returns>An array of all the vertex buffer mixed</returns>
 	static float* getAllVertex( std::vector<Figure> figures );
+
+private:
+	std::vector<Vertex> createQuad( glm::vec3 centerCoordinates );
 };

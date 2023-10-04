@@ -5,6 +5,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
 
 #include "Renderer.h"
 
@@ -14,15 +15,13 @@
 #include "VertexArray.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "Figure.h"
 
-static void error_callback( int error, const char* description ) {
-	fprintf( stderr, "Error: %s\n", description );
-}
+const int WIDTH = 600;
+const int HEIGHT = 900;
 
-static void key_callback( GLFWwindow* window, int key, int scancode, int action, int mods ) {
-	if( key == GLFW_KEY_ESCAPE && action == GLFW_PRESS )
-		glfwSetWindowShouldClose( window, GLFW_TRUE );
-}
+static void error_callback( int error, const char* description );
+static void key_callback( GLFWwindow* window, int key, int scancode, int action, int mods );
 
 int main( void ) {
 	GLFWwindow* window;
@@ -33,9 +32,9 @@ int main( void ) {
 		exit( EXIT_FAILURE );
 
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 4 );
-	glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 0 );
+	glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 1 );
 
-	window = glfwCreateWindow( 640, 480, "Advanced Example", NULL, NULL );
+	window = glfwCreateWindow( WIDTH, HEIGHT, "Cuadro Abstracto", NULL, NULL );
 	if( !window ) {
 		glfwTerminate();
 		exit( EXIT_FAILURE );
@@ -48,16 +47,21 @@ int main( void ) {
 	glfwSwapInterval( 1 );
 
 	float vertices[] = {
-		// Positions		// Colors			// Texture Coords
-		 0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f, // 0
-		 0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f, // 1
-		-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f, // 2
-		-0.5f,  0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f, // 3
+		// Positions X Y Z		// Colors RGBA				// Texture Coords  // TextSelector //IsCircle
+		 0.5f,  0.5f, 0.0f,		1.0f, 0.0f, 0.0f, 1.0f,		0.0f, 0.0f,			1.0f,			0.0f,// 0
+		 0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f, 1.0f,		0.0f, 1.0f,			1.0f,			0.0f,// 1
+		-0.5f, -0.5f, 0.0f,		0.0f, 0.0f, 1.0f, 1.0f,		1.0f, 1.0f,			1.0f,			0.0f,// 2
+		-0.5f,  0.5f, 0.0f,		0.0f, 1.0f, 0.0f, 1.0f,		1.0f, 0.0f,			1.0f,			0.0f,// 3
 
-		 0.1f,  0.6f, -0.2f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f, // 4
-		 0.1f, -0.6f, -0.2f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f, // 5
-		-0.1f, -0.6f, -0.2f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f, // 6
-		-0.1f,  0.6f, -0.2f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f  // 7
+		 0.1f,  0.6f, -0.2f,	1.0f, 0.0f, 0.0f, 1.0f,		1.0f, 1.0f,			2.0f,			1.0f,// 4
+		 0.1f, -0.6f, -0.2f,	0.0f, 1.0f, 0.0f, 1.0f,		1.0f, 0.0f,			2.0f,			1.0f,// 5
+		-0.1f, -0.6f, -0.2f,	0.0f, 0.0f, 1.0f, 1.0f,		0.0f, 0.0f,			2.0f,			1.0f,// 6
+		-0.1f,  0.6f, -0.2f,	0.0f, 1.0f, 0.0f, 1.0f,		0.0f, 1.0f,			2.0f,			1.0f,// 7
+
+		 0.6f,  0.6f, -0.1f,	1.0f, 0.0f, 0.0f, 0.5f,		1.0f, 1.0f,			0.0f,			0.0f,// 8
+		 0.6f, -0.6f, -0.1f,	0.0f, 1.0f, 0.0f, 0.5f,		1.0f, 0.0f,			0.0f,			0.0f,// 9
+		 0.4f, -0.6f, -0.1f,	0.0f, 0.0f, 1.0f, 0.5f,		0.0f, 0.0f,			0.0f,			0.0f,// 10
+		 0.4f,  0.6f, -0.1f,	0.0f, 1.0f, 0.0f, 0.5f,		0.0f, 1.0f,			0.0f,			0.0f // 11
 	};
 
 	unsigned int indices[] = {
@@ -65,7 +69,10 @@ int main( void ) {
 		2, 3, 0,
 
 		4, 5, 6,
-		6, 7, 4
+		6, 7, 4,
+
+		8, 9, 10,
+		10, 11, 8
 	};
 
 	// How OpenGL will work with the format of textures
@@ -79,9 +86,11 @@ int main( void ) {
 	// Add a push per every layer that you add to VertexBuffer, the param is de number of
 	// positions that use your layer
 	// Each layer represents a level, can be a coordinate, color or texture
-	layout.push<float>( 3 );
-	layout.push<float>( 3 );
-	layout.push<float>( 2 );
+	layout.push<float>( 3 ); // XYZ
+	layout.push<float>( 4 ); // RGBA
+	layout.push<float>( 2 ); // TextCoords
+	layout.push<float>( 1 ); // TextSelector
+	layout.push<float>( 1 ); // IsCircle
 	va.addBuffer( vb, layout );
 	va.bind();
 
@@ -91,18 +100,34 @@ int main( void ) {
 
 	// Just write the direction of your Texture
 	Texture texture1( "res/textures/nether_brick.png" );
+	Texture texture2( "res/textures/amatista_block.png" );
 	// If you add more than 1 texture, need to add + 1 in the param per each bind call
 	texture1.bind( 0 );
-
+	texture2.bind( 1 );
 
 	Renderer renderer;
 
 	glPolygonMode( GL_FRONT, GL_FILL );
+	glm::mat4x4 projection, model, view;
+
+	int samplers[ 2 ] = { 0, 1 };
+
+	Figure firstFigure( FigureType::SQUARE );
+	std::vector<Figure> figures;
+	figures.push_back( firstFigure );
+
+	float* vertex = Figure::getAllVertex( figures );
+	std::cout << sizeof( vertex ) << std::endl;
+	for( int i = 0; i < Figure::VertexSize * figures.size() * 4; i++ )
+		std::cout << vertex[ i ] << std::endl;
 
 	while( !glfwWindowShouldClose( window ) ) {
 		float ratio;
 		int width, height;
-		glm::mat4x4 projection, model, view;
+
+		view = glm::mat4( 1.0f );
+		// note that we're translating the scene in the reverse direction of where we want to move
+		view = glm::translate( view, glm::vec3( 0.0f, 0.0f, -3.0f ) );
 
 		glfwGetFramebufferSize( window, &width, &height );
 		ratio = width / ( float ) height;
@@ -114,12 +139,16 @@ int main( void ) {
 
 		glm::mat4 m( 1.0f );
 		model = glm::rotate( m, ( float ) glfwGetTime(), glm::vec3( 1.f ) );
-		projection = glm::ortho( -ratio, ratio, -1.f, 1.f, 1.f, -1.f );
+		//model = m;
+		//projection = glm::ortho( 0.0f, ( float ) width, 0.0f, ( float ) height, 0.1f, 100.0f );
+		projection = glm::perspective( glm::radians( 45.0f ), ( float ) width / ( float ) height, 0.1f, 100.0f );
 
 
 		mainShader.bind();
+		mainShader.SetuniformsMat4f( "projection", projection );
+		mainShader.SetuniformsMat4f( "view", view );
 		mainShader.SetuniformsMat4f( "model", model );
-		mainShader.setUniform1i( "ourTexture", 0 );
+		mainShader.setUniform1iv( "ourTextures", sizeof( samplers ), samplers );
 
 		renderer.draw( va, ib, mainShader );
 
@@ -132,4 +161,13 @@ int main( void ) {
 
 	glfwTerminate();
 	exit( EXIT_SUCCESS );
+}
+
+static void error_callback( int error, const char* description ) {
+	fprintf( stderr, "Error: %s\n", description );
+}
+
+static void key_callback( GLFWwindow* window, int key, int scancode, int action, int mods ) {
+	if( key == GLFW_KEY_ESCAPE && action == GLFW_PRESS )
+		glfwSetWindowShouldClose( window, GLFW_TRUE );
 }
