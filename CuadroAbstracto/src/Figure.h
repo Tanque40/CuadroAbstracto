@@ -50,9 +50,17 @@ public:
 	float* getVertex( int position );
 	int getVertexSize( int position );
 	FigureType getType();
+	unsigned int* getIndices();
+	unsigned int getIndicesSize();
 
-	void scale( float* scalar );
-	void scale( float* scalarX, float* scalarY );
+	void scale( unsigned int index, float* scalar );
+	void scale( unsigned int index, float* scalarX, float* scalarY );
+
+	void rotate( unsigned int index, glm::vec3 rotationVector, float* angle );
+
+	void translate( unsigned int index, glm::vec3 translateObjetive );
+
+	void duplicate();
 
 	/// <summary>
 	/// Convert all figures to a simple float array
@@ -60,6 +68,8 @@ public:
 	/// <param name="figures">the vector of all the figures</param>
 	/// <returns>An array of all the vertex buffer mixed</returns>
 	static float* getAllVertex( std::vector<Figure> figures );
+
+	static unsigned int* getAllIndices( std::vector<Figure> figures );
 
 private:
 	std::vector<Vertex> createQuad( glm::vec3 centerCoordinates );

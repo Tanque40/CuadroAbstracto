@@ -113,15 +113,29 @@ int main( void ) {
 	int samplers[ 2 ] = { 0, 1 };
 
 	Figure firstFigure( FigureType::SQUARE );
+	Figure secondFigure( FigureType::TRIANGLE );
+	Figure thirdFigure( FigureType::SQUARE );
 	std::vector<Figure> figures;
 	figures.push_back( firstFigure );
+	figures.push_back( secondFigure );
+	figures.push_back( thirdFigure );
 
 	float* vertex = Figure::getAllVertex( figures );
 	std::cout << sizeof( vertex ) << std::endl;
 	for( int i = 0; i < Figure::VertexSize * figures.size() * 4; i++ )
 		std::cout << vertex[ i ] << std::endl;
 
+	unsigned int* index = Figure::getAllIndices( figures );
+	std::cout << "Indices" << std::endl;
+	std::cout << sizeof( index ) << std::endl;
+	for( int i = 0; i < figures.size() * 6; i++ )
+		std::cout << index[ i ] << std::endl;
+
+	GLCall( glEnable( GL_DEPTH_TEST ) );
+
 	while( !glfwWindowShouldClose( window ) ) {
+		GLCall( glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ) );
+
 		float ratio;
 		int width, height;
 

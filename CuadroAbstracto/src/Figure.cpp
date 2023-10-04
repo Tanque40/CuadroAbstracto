@@ -46,6 +46,33 @@ FigureType Figure::getType() {
 	return type;
 }
 
+unsigned int* Figure::getIndices() {
+	return indices.data();
+}
+
+unsigned int Figure::getIndicesSize() {
+	return indices.size();
+}
+
+void Figure::scale( unsigned int index, float* scalar ) {
+
+}
+void Figure::scale( unsigned int index, float* scalarX, float* scalarY ) {
+
+}
+
+void Figure::rotate( unsigned int index, glm::vec3 rotationVector, float* angle ) {
+
+}
+
+void Figure::translate( unsigned int index, glm::vec3 translateVector ) {
+
+}
+
+void Figure::duplicate() {
+
+}
+
 float* Figure::getAllVertex( std::vector<Figure> figures ) {
 	unsigned int stride = 0;
 	unsigned int numberOfVertex;
@@ -67,6 +94,23 @@ float* Figure::getAllVertex( std::vector<Figure> figures ) {
 		}
 	}
 	return vertices;
+}
+
+unsigned int* Figure::getAllIndices( std::vector<Figure> figures ) {
+	unsigned int* indices = new unsigned int[ figures.size() * 6 ];
+
+	unsigned int offset = 0;
+	unsigned int cont = 0;
+	for( unsigned int i = 0; i < figures.size(); i++ ) {
+		unsigned int* figureIndices = figures.at( i ).getIndices();
+		for( unsigned int j = 0; j < figures.at( i ).getIndicesSize(); j++ ) {
+			indices[ cont ] = figureIndices[ j ] + offset;
+			cont++;
+		}
+		offset += ( figures.at( i ).getType() == FigureType::TRIANGLE ) ? 3 : 4;
+	}
+
+	return indices;
 }
 
 std::vector<Vertex> Figure::createQuad( glm::vec3 centerCoordinates ) {
