@@ -68,153 +68,154 @@ void Figure::scale( unsigned int index, float scalar ) {
 		figurePropierties.at( 3 + offset ).coordinates *= scalar;
 
 }
+void Figure::scale( unsigned int index, float* scalarX, float* scalarY ) {
 
-void Figure::scale( unsigned int index, float scalarX, float scalarY ) {
-	bool isTriangle = type == FigureType::TRIANGLE;
-	unsigned int offset = index * ( isTriangle ) ? 3 : 4;
+	void Figure::scale( unsigned int index, float scalarX, float scalarY ) {
+		bool isTriangle = type == FigureType::TRIANGLE;
+		unsigned int offset = index * ( isTriangle ) ? 3 : 4;
 
-	float scalarPerSideX = scalarX / 2.0;
-	float scalarPerSideY = scalarY / 2.0;
+		float scalarPerSideX = scalarX / 2.0;
+		float scalarPerSideY = scalarY / 2.0;
 
-	figurePropierties.at( 0 + offset ).coordinates.x *= scalarPerSideX;
-	figurePropierties.at( 0 + offset ).coordinates.y *= scalarPerSideY;
-	figurePropierties.at( 1 + offset ).coordinates.x *= scalarPerSideX;
-	figurePropierties.at( 1 + offset ).coordinates.y *= scalarPerSideY;
-	figurePropierties.at( 2 + offset ).coordinates.x *= scalarPerSideX;
-	figurePropierties.at( 2 + offset ).coordinates.y *= scalarPerSideY;
-	if( isTriangle ) {
-		figurePropierties.at( 3 + offset ).coordinates.x *= scalarPerSideX;
-		figurePropierties.at( 3 + offset ).coordinates.y *= scalarPerSideY;
+		figurePropierties.at( 0 + offset ).coordinates.x *= scalarPerSideX;
+		figurePropierties.at( 0 + offset ).coordinates.y *= scalarPerSideY;
+		figurePropierties.at( 1 + offset ).coordinates.x *= scalarPerSideX;
+		figurePropierties.at( 1 + offset ).coordinates.y *= scalarPerSideY;
+		figurePropierties.at( 2 + offset ).coordinates.x *= scalarPerSideX;
+		figurePropierties.at( 2 + offset ).coordinates.y *= scalarPerSideY;
+		if( isTriangle ) {
+			figurePropierties.at( 3 + offset ).coordinates.x *= scalarPerSideX;
+			figurePropierties.at( 3 + offset ).coordinates.y *= scalarPerSideY;
+		}
 	}
-}
 
-void Figure::rotate( unsigned int index, glm::vec3 rotationVector, float angle ) {
-	bool isTriangle = type == FigureType::TRIANGLE;
-	unsigned int offset = index * ( isTriangle ) ? 3 : 4;
-	glm::vec4 auxVector;
+	void Figure::rotate( unsigned int index, glm::vec3 rotationVector, float angle ) {
+		bool isTriangle = type == FigureType::TRIANGLE;
+		unsigned int offset = index * ( isTriangle ) ? 3 : 4;
+		glm::vec4 auxVector;
 
-	glm::mat4 rotationMatrix( 1.0f );
-	rotationMatrix = glm::rotate( rotationMatrix, glm::radians( angle ), rotationVector );
+		glm::mat4 rotationMatrix( 1.0f );
+		rotationMatrix = glm::rotate( rotationMatrix, glm::radians( angle ), rotationVector );
 
-	auxVector = glm::vec4( figurePropierties.at( 0 + offset ).coordinates, 1.0f );
-	auxVector = auxVector * rotationMatrix;
-	figurePropierties.at( 0 + offset ).coordinates = { auxVector.x, auxVector.y, auxVector.z };
-
-	auxVector = glm::vec4( figurePropierties.at( 1 + offset ).coordinates, 1.0f );
-	auxVector = auxVector * rotationMatrix;
-	figurePropierties.at( 1 + offset ).coordinates = { auxVector.x, auxVector.y, auxVector.z };
-
-	auxVector = glm::vec4( figurePropierties.at( 2 + offset ).coordinates, 1.0f );
-	auxVector = auxVector * rotationMatrix;
-	figurePropierties.at( 2 + offset ).coordinates = { auxVector.x, auxVector.y, auxVector.z };
-
-
-	if( isTriangle ) {
-		auxVector = glm::vec4( figurePropierties.at( 3 + offset ).coordinates, 1.0f );
+		auxVector = glm::vec4( figurePropierties.at( 0 + offset ).coordinates, 1.0f );
 		auxVector = auxVector * rotationMatrix;
-		figurePropierties.at( 3 + offset ).coordinates = { auxVector.x, auxVector.y, auxVector.z };
-	}
-}
+		figurePropierties.at( 0 + offset ).coordinates = { auxVector.x, auxVector.y, auxVector.z };
 
-void Figure::translate( unsigned int index, glm::vec3 translateVector ) {
-	bool isTriangle = type == FigureType::TRIANGLE;
-	unsigned int offset = index * ( isTriangle ) ? 3 : 4;
-	glm::vec4 auxVector;
+		auxVector = glm::vec4( figurePropierties.at( 1 + offset ).coordinates, 1.0f );
+		auxVector = auxVector * rotationMatrix;
+		figurePropierties.at( 1 + offset ).coordinates = { auxVector.x, auxVector.y, auxVector.z };
 
-	glm::mat3 transformMatrix( 1.0f );
-	transformMatrix = glm::translate( translateVector );
+		auxVector = glm::vec4( figurePropierties.at( 2 + offset ).coordinates, 1.0f );
+		auxVector = auxVector * rotationMatrix;
+		figurePropierties.at( 2 + offset ).coordinates = { auxVector.x, auxVector.y, auxVector.z };
 
-	figurePropierties.at( 0 + offset ).coordinates = figurePropierties.at( 0 + offset ).coordinates * transformMatrix;
-	figurePropierties.at( 1 + offset ).coordinates = figurePropierties.at( 1 + offset ).coordinates * transformMatrix;
-	figurePropierties.at( 2 + offset ).coordinates = figurePropierties.at( 2 + offset ).coordinates * transformMatrix;
 
-	if( isTriangle ) {
-		figurePropierties.at( 3 + offset ).coordinates = figurePropierties.at( 3 + offset ).coordinates * transformMatrix;
-	}
-}
-
-void Figure::duplicate() {
-	bool isTriangle = type == FigureType::TRIANGLE;
-	Vertex duplicateVertex1, duplicateVertex2, duplicateVertex3, duplicateVertex4;
-
-	duplicateVertex1 = figurePropierties.at( 0 );
-	duplicateVertex2 = figurePropierties.at( 1 );
-	duplicateVertex3 = figurePropierties.at( 2 );
-	if( isTriangle ) {
-		duplicateVertex4 = figurePropierties.at( 3 );
+		if( isTriangle ) {
+			auxVector = glm::vec4( figurePropierties.at( 3 + offset ).coordinates, 1.0f );
+			auxVector = auxVector * rotationMatrix;
+			figurePropierties.at( 3 + offset ).coordinates = { auxVector.x, auxVector.y, auxVector.z };
+		}
 	}
 
-	translate( 0, glm::vec3( -0.3f, 0.0f, 0.0f ) );
-	translate( 1, glm::vec3( 0.3f, 0.0f, 0.0f ) );
-}
+	void Figure::translate( unsigned int index, glm::vec3 translateVector ) {
+		bool isTriangle = type == FigureType::TRIANGLE;
+		unsigned int offset = index * ( isTriangle ) ? 3 : 4;
+		glm::vec4 auxVector;
 
-float* Figure::getAllVertex( std::vector<Figure> figures ) {
-	unsigned int stride = 0;
-	unsigned int numberOfVertex;
+		glm::mat3 transformMatrix( 1.0f );
+		transformMatrix = glm::translate( translateVector );
 
-	float* vertices = new float[ figures.size() * sizeof( Vertex ) * 4 ];
+		figurePropierties.at( 0 + offset ).coordinates = figurePropierties.at( 0 + offset ).coordinates * transformMatrix;
+		figurePropierties.at( 1 + offset ).coordinates = figurePropierties.at( 1 + offset ).coordinates * transformMatrix;
+		figurePropierties.at( 2 + offset ).coordinates = figurePropierties.at( 2 + offset ).coordinates * transformMatrix;
 
-	unsigned int cont = 0;
-	for( int i = 0; i < figures.size(); i++ ) {
-		if( figures.at( i ).getType() == FigureType::TRIANGLE )
-			numberOfVertex = 3;
-		else
-			numberOfVertex = 4;
-		for( unsigned int j = 0; j < numberOfVertex; j++ ) {
-			float* eachVertex = figures.at( i ).getVertex( j );
-			for( unsigned int k = 0; k < Figure::VertexSize; k++ ) {
-				vertices[ cont ] = eachVertex[ k ];
-				cont++;
+		if( isTriangle ) {
+			figurePropierties.at( 3 + offset ).coordinates = figurePropierties.at( 3 + offset ).coordinates * transformMatrix;
+		}
+	}
+
+	void Figure::duplicate() {
+		bool isTriangle = type == FigureType::TRIANGLE;
+		Vertex duplicateVertex1, duplicateVertex2, duplicateVertex3, duplicateVertex4;
+
+		duplicateVertex1 = figurePropierties.at( 0 );
+		duplicateVertex2 = figurePropierties.at( 1 );
+		duplicateVertex3 = figurePropierties.at( 2 );
+		if( isTriangle ) {
+			duplicateVertex4 = figurePropierties.at( 3 );
+		}
+
+		translate( 0, glm::vec3( -0.3f, 0.0f, 0.0f ) );
+		translate( 1, glm::vec3( 0.3f, 0.0f, 0.0f ) );
+	}
+
+	float* Figure::getAllVertex( std::vector<Figure> figures ) {
+		unsigned int stride = 0;
+		unsigned int numberOfVertex;
+
+		float* vertices = new float[ figures.size() * sizeof( Vertex ) * 4 ];
+
+		unsigned int cont = 0;
+		for( int i = 0; i < figures.size(); i++ ) {
+			if( figures.at( i ).getType() == FigureType::TRIANGLE )
+				numberOfVertex = 3;
+			else
+				numberOfVertex = 4;
+			for( unsigned int j = 0; j < numberOfVertex; j++ ) {
+				float* eachVertex = figures.at( i ).getVertex( j );
+				for( unsigned int k = 0; k < Figure::VertexSize; k++ ) {
+					vertices[ cont ] = eachVertex[ k ];
+					cont++;
+				}
 			}
 		}
+		return vertices;
 	}
-	return vertices;
-}
 
-unsigned int* Figure::getAllIndices( std::vector<Figure> figures ) {
-	unsigned int* indices = new unsigned int[ figures.size() * 6 ];
+	unsigned int* Figure::getAllIndices( std::vector<Figure> figures ) {
+		unsigned int* indices = new unsigned int[ figures.size() * 6 ];
 
-	unsigned int offset = 0;
-	unsigned int cont = 0;
-	for( unsigned int i = 0; i < figures.size(); i++ ) {
-		unsigned int* figureIndices = figures.at( i ).getIndices();
-		for( unsigned int j = 0; j < figures.at( i ).getIndicesSize(); j++ ) {
-			indices[ cont ] = figureIndices[ j ] + offset;
-			cont++;
+		unsigned int offset = 0;
+		unsigned int cont = 0;
+		for( unsigned int i = 0; i < figures.size(); i++ ) {
+			unsigned int* figureIndices = figures.at( i ).getIndices();
+			for( unsigned int j = 0; j < figures.at( i ).getIndicesSize(); j++ ) {
+				indices[ cont ] = figureIndices[ j ] + offset;
+				cont++;
+			}
+			offset += ( figures.at( i ).getType() == FigureType::TRIANGLE ) ? 3 : 4;
 		}
-		offset += ( figures.at( i ).getType() == FigureType::TRIANGLE ) ? 3 : 4;
+
+		return indices;
 	}
 
-	return indices;
-}
+	std::vector<Vertex> Figure::createQuad( glm::vec3 centerCoordinates ) {
+		float offset = 0.5f;
+		Vertex v0, v1, v2, v3;
 
-std::vector<Vertex> Figure::createQuad( glm::vec3 centerCoordinates ) {
-	float offset = 0.5f;
-	Vertex v0, v1, v2, v3;
+		v0.coordinates = { centerCoordinates.x - offset, centerCoordinates.y - offset , 0.0f };
+		v0.colors = { 1.0f, 1.0f, 1.0f, 1.0f };
+		v0.textureCoords = { 0.0f, 0.0f };
+		v0.textureBool = { 0.0f };
+		v0.figureType = { 0.0f };
 
-	v0.coordinates = { centerCoordinates.x - offset, centerCoordinates.y - offset , 0.0f };
-	v0.colors = { 1.0f, 1.0f, 1.0f, 1.0f };
-	v0.textureCoords = { 0.0f, 0.0f };
-	v0.textureBool = { 0.0f };
-	v0.figureType = { 0.0f };
+		v1.coordinates = { centerCoordinates.x - offset, centerCoordinates.y + offset , 0.0f };
+		v1.colors = { 1.0f, 1.0f, 1.0f, 1.0f };
+		v1.textureCoords = { 0.0f, 1.0f };
+		v1.textureBool = { 0.0f };
+		v1.figureType = { 0.0f };
 
-	v1.coordinates = { centerCoordinates.x - offset, centerCoordinates.y + offset , 0.0f };
-	v1.colors = { 1.0f, 1.0f, 1.0f, 1.0f };
-	v1.textureCoords = { 0.0f, 1.0f };
-	v1.textureBool = { 0.0f };
-	v1.figureType = { 0.0f };
+		v2.coordinates = { centerCoordinates.x + offset, centerCoordinates.y + offset , 0.0f };
+		v2.colors = { 1.0f, 1.0f, 1.0f, 1.0f };
+		v2.textureCoords = { 1.0f, 0.0f };
+		v2.textureBool = { 0.0f };
+		v2.figureType = { 0.0f };
 
-	v2.coordinates = { centerCoordinates.x + offset, centerCoordinates.y + offset , 0.0f };
-	v2.colors = { 1.0f, 1.0f, 1.0f, 1.0f };
-	v2.textureCoords = { 1.0f, 0.0f };
-	v2.textureBool = { 0.0f };
-	v2.figureType = { 0.0f };
+		v3.coordinates = { centerCoordinates.x + offset, centerCoordinates.y - offset , 0.0f };
+		v3.colors = { 1.0f, 1.0f, 1.0f, 1.0f };
+		v3.textureCoords = { 1.0f, 1.0f };
+		v3.textureBool = { 0.0f };
+		v3.figureType = { 0.0f };
 
-	v3.coordinates = { centerCoordinates.x + offset, centerCoordinates.y - offset , 0.0f };
-	v3.colors = { 1.0f, 1.0f, 1.0f, 1.0f };
-	v3.textureCoords = { 1.0f, 1.0f };
-	v3.textureBool = { 0.0f };
-	v3.figureType = { 0.0f };
-
-	return { v0, v1, v2, v3 };
-}
+		return { v0, v1, v2, v3 };
+	}
