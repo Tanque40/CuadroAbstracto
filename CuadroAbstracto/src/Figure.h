@@ -1,12 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <array>
 #include <glm/glm.hpp>
-
-#include "VertexArray.h"
-#include "IndexBuffer.h"
-#include "VertexBufferLayout.h"
 
 enum FigureType {
 	TRIANGLE = 0,
@@ -47,20 +42,27 @@ public:
 
 	~Figure();
 
+	// Figure details
+	inline bool isTriangle() { return type == FigureType::TRIANGLE; };
 	float* getVertex( int position );
 	int getVertexSize( int position );
 	FigureType getType();
 	unsigned int* getIndices();
 	unsigned int getIndicesSize();
+	inline unsigned int numberOfVertex() { return ( isTriangle() ) ? 3 : 4; };
+	inline unsigned int numberOfVertices() { return figurePropierties.size() * Figure::VertexSize; };
+	inline unsigned int sizeOfPropierties() { return figurePropierties.size(); };
 
+	// Figure vertices
 	void scale( unsigned int index, float scalar );
 	void scale( unsigned int index, float scalarX, float scalarY );
-
 	void rotate( unsigned int index, glm::vec3 rotationVector, float angle );
-
 	void translate( unsigned int index, glm::vec3 translateObjetive );
-
 	void duplicate();
+	void duplicateIndices();
+
+	// Figure Colors
+	void color( unsigned int index, glm::vec4 newColor );
 
 	/// <summary>
 	/// Convert all figures to a simple float array

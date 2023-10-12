@@ -46,39 +46,11 @@ int main( void ) {
 	gladLoadGL();
 	glfwSwapInterval( 1 );
 
-	float vertices[] = {
-		// Positions X Y Z		// Colors RGBA				// Texture Coords  // TextSelector //IsCircle
-		 0.5f,  0.5f, 0.0f,		1.0f, 0.0f, 0.0f, 1.0f,		0.0f, 0.0f,			1.0f,			0.0f,// 0
-		 0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f, 1.0f,		0.0f, 1.0f,			1.0f,			0.0f,// 1
-		-0.5f, -0.5f, 0.0f,		0.0f, 0.0f, 1.0f, 1.0f,		1.0f, 1.0f,			1.0f,			0.0f,// 2
-		-0.5f,  0.5f, 0.0f,		0.0f, 1.0f, 0.0f, 1.0f,		1.0f, 0.0f,			1.0f,			0.0f,// 3
-
-		 0.1f,  0.6f, -0.2f,	1.0f, 0.0f, 0.0f, 1.0f,		1.0f, 1.0f,			2.0f,			1.0f,// 4
-		 0.1f, -0.6f, -0.2f,	0.0f, 1.0f, 0.0f, 1.0f,		1.0f, 0.0f,			2.0f,			1.0f,// 5
-		-0.1f, -0.6f, -0.2f,	0.0f, 0.0f, 1.0f, 1.0f,		0.0f, 0.0f,			2.0f,			1.0f,// 6
-		-0.1f,  0.6f, -0.2f,	0.0f, 1.0f, 0.0f, 1.0f,		0.0f, 1.0f,			2.0f,			1.0f,// 7
-
-		 0.6f,  0.6f, -0.1f,	1.0f, 0.0f, 0.0f, 0.5f,		1.0f, 1.0f,			0.0f,			0.0f,// 8
-		 0.6f, -0.6f, -0.1f,	0.0f, 1.0f, 0.0f, 0.5f,		1.0f, 0.0f,			0.0f,			0.0f,// 9
-		 0.4f, -0.6f, -0.1f,	0.0f, 0.0f, 1.0f, 0.5f,		0.0f, 0.0f,			0.0f,			0.0f,// 10
-		 0.4f,  0.6f, -0.1f,	0.0f, 1.0f, 0.0f, 0.5f,		0.0f, 1.0f,			0.0f,			0.0f // 11
-	};
-
-	unsigned int indices[] = {
-		0, 1, 2,
-		2, 3, 0,
-
-		4, 5, 6,
-		6, 7, 4,
-
-		8, 9, 10,
-		10, 11, 8
-	};
-
 	// How OpenGL will work with the format of textures
 	GLCall( glEnable( GL_BLEND ) );
 	GLCall( glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA ) );
 
+	Shader mainShader( "res/shaders/CuadroAbstracto.vs", "res/shaders/CuadroAbstracto.fs" );
 	CuadroAbstracto cuadro;
 	cuadro.init();
 
@@ -86,7 +58,7 @@ int main( void ) {
 	unsigned int* indices = cuadro.getIndices();
 
 	VertexArray va;
-	VertexBuffer vb( vertices, 44 * sizeof( float ) );
+	VertexBuffer vb( vertices, cuadro.getNumberOfVertices() * sizeof( float ) );
 	VertexBufferLayout layout;
 
 	// Add a push per every layer that you add to VertexBuffer, the param is de number of
@@ -100,9 +72,8 @@ int main( void ) {
 	va.addBuffer( vb, layout );
 	va.bind();
 
-	IndexBuffer ib( indices, 6 * sizeof( unsigned int ) );
+	IndexBuffer ib( indices, cuadro.getNumberOfIndices() * sizeof( unsigned int ) );
 
-	Shader mainShader( "res/shaders/CuadroAbstracto.vs", "res/shaders/CuadroAbstracto.fs" );
 
 	// Just write the direction of your Texture
 	Texture texture1( "res/textures/nether_brick.png" );
@@ -118,30 +89,10 @@ int main( void ) {
 
 	int samplers[ 2 ] = { 0, 1 };
 
-	Figure firstFigure( FigureType::SQUARE );
-	Figure secondFigure( FigureType::TRIANGLE );
-	Figure thirdFigure( FigureType::SQUARE );
-	std::vector<Figure> figures;
-	figures.push_back( firstFigure );
-	figures.push_back( secondFigure );
-	figures.push_back( thirdFigure );
-
-	float* vertex = Figure::getAllVertex( figures );
-	std::cout << sizeof( vertex ) << std::endl;
-	for( int i = 0; i < Figure::VertexSize * figures.size() * 4; i++ )
-		std::cout << vertex[ i ] << std::endl;
-
-	unsigned int* index = Figure::getAllIndices( figures );
-	std::cout << "Indices" << std::endl;
-	std::cout << sizeof( index ) << std::endl;
-	for( int i = 0; i < figures.size() * 6; i++ )
-		std::cout << index[ i ] << std::endl;
-
 	GLCall( glEnable( GL_DEPTH_TEST ) );
 
 	while( !glfwWindowShouldClose( window ) ) {
 		GLCall( glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ) );
-
 		float ratio;
 		int width, height;
 
@@ -170,7 +121,6 @@ int main( void ) {
 		mainShader.setUniform1iv( "ourTextures", sizeof( samplers ), samplers );
 
 		renderer.draw( va, ib, mainShader );
-
 
 		glfwSwapBuffers( window );
 		glfwPollEvents();

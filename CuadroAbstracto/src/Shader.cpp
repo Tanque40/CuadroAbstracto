@@ -54,13 +54,13 @@ void Shader::SetuniformsMat4f( const std::string& name, const glm::mat4& mat4 ) 
 
 std::string Shader::parseShader( const std::string& filepath ) {
 	std::fstream stream( filepath );
-	std::string line, ss;
+	std::string line, stringSource;
 
 	while( getline( stream, line ) ) {
-		ss += line += '\n';
+		stringSource += line += '\n';
 	}
 
-	return ss;
+	return stringSource;
 }
 
 unsigned int Shader::compileShader( unsigned int type, const std::string& source ) {
