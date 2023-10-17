@@ -57,6 +57,11 @@ int main( void ) {
 	float* vertices = cuadro.getVertices();
 	unsigned int* indices = cuadro.getIndices();
 
+	std::cout << cuadro.getNumberOfVertices() << std::endl;
+
+	//for( int i = 0; i < cuadro.getNumberOfVertices(); i++ )
+		//std::cout << vertices[ i ] << std::endl;
+
 	VertexArray va;
 	VertexBuffer vb( vertices, cuadro.getNumberOfVertices() * sizeof( float ) );
 	VertexBufferLayout layout;
@@ -73,7 +78,6 @@ int main( void ) {
 	va.bind();
 
 	IndexBuffer ib( indices, cuadro.getNumberOfIndices() * sizeof( unsigned int ) );
-
 
 	// Just write the direction of your Texture
 	Texture texture1( "res/textures/nether_brick.png" );
@@ -93,37 +97,39 @@ int main( void ) {
 
 	while( !glfwWindowShouldClose( window ) ) {
 		GLCall( glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ) );
-		float ratio;
-		int width, height;
+		{
+			float ratio;
+			int width, height;
 
-		view = glm::mat4( 1.0f );
-		// note that we're translating the scene in the reverse direction of where we want to move
-		view = glm::translate( view, glm::vec3( 0.0f, 0.0f, -3.0f ) );
+			view = glm::mat4( 1.0f );
+			// note that we're translating the scene in the reverse direction of where we want to move
+			view = glm::translate( view, glm::vec3( 0.0f, 0.0f, -3.0f ) );
 
-		glfwGetFramebufferSize( window, &width, &height );
-		ratio = width / ( float ) height;
-		glm::vec3 screenResolution( ( float ) width, ( float ) height, 0.0f );
+			glfwGetFramebufferSize( window, &width, &height );
+			ratio = width / ( float ) height;
+			glm::vec3 screenResolution( ( float ) width, ( float ) height, 0.0f );
 
-		glViewport( 0, 0, width, height );
+			glViewport( 0, 0, width, height );
 
-		renderer.clear();
+			renderer.clear();
 
-		glm::mat4 m( 1.0f );
-		//model = glm::rotate( m, ( float ) glfwGetTime(), glm::vec3( 1.0f ) );
-		model = m;
-		projection = glm::perspective( glm::radians( 45.0f ), ( float ) width / ( float ) height, 0.1f, 100.0f );
+			glm::mat4 m( 1.0f );
+			//model = glm::rotate( m, ( float ) glfwGetTime(), glm::vec3( 1.0f ) );
+			model = m;
+			projection = glm::perspective( glm::radians( 45.0f ), ( float ) width / ( float ) height, 0.1f, 100.0f );
 
+			mainShader.bind();
+			mainShader.SetuniformsMat4f( "projection", projection );
+			mainShader.SetuniformsMat4f( "view", view );
+			mainShader.SetuniformsMat4f( "model", model );
+			mainShader.setUniform1iv( "ourTextures", sizeof( samplers ), samplers );
 
-		mainShader.bind();
-		mainShader.SetuniformsMat4f( "projection", projection );
-		mainShader.SetuniformsMat4f( "view", view );
-		mainShader.SetuniformsMat4f( "model", model );
-		mainShader.setUniform1iv( "ourTextures", sizeof( samplers ), samplers );
+			renderer.draw( va, ib, mainShader );
 
-		renderer.draw( va, ib, mainShader );
+			GLCall( glfwSwapBuffers( window ) );
+		}
 
-		glfwSwapBuffers( window );
-		glfwPollEvents();
+		GLCall( glfwPollEvents() );
 	}
 
 	glfwDestroyWindow( window );

@@ -20,6 +20,8 @@ void main(){
 	float distance = 1 - length(uv);
 	if(distance > 0.0)
 		distance = 1.0;
+	else
+		distance = 0.0;
 	
 	vec4 texColor = vec4(1.0);
 

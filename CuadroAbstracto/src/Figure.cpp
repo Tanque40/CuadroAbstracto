@@ -74,12 +74,18 @@ unsigned int Figure::getIndicesSize() {
 
 void Figure::scale( unsigned int index, float scalar ) {
 	unsigned int offset = index * numberOfVertex();
+	unsigned int position = 0;
 
-	figurePropierties.at( 0 + offset ).coordinates *= scalar;
-	figurePropierties.at( 1 + offset ).coordinates *= scalar;
-	figurePropierties.at( 2 + offset ).coordinates *= scalar;
-	if( !isTriangle() )
-		figurePropierties.at( 3 + offset ).coordinates *= scalar;
+	position = 0 + offset;
+	figurePropierties.at( position ).coordinates *= scalar;
+	position = 1 + offset;
+	figurePropierties.at( position ).coordinates *= scalar;
+	position = 2 + offset;
+	figurePropierties.at( position ).coordinates *= scalar;
+	if( !isTriangle() ) {
+		position = 3 + offset;
+		figurePropierties.at( position ).coordinates *= scalar;
+	}
 
 }
 
@@ -100,6 +106,7 @@ void Figure::scale( unsigned int index, float scalarX, float scalarY ) {
 
 void Figure::rotate( unsigned int index, glm::vec3 rotationVector, float angle ) {
 	unsigned int offset = index * numberOfVertex();
+	unsigned int position = 0;
 	glm::vec4 auxVector;
 
 	glm::mat4 rotationMatrix( 1.0f );
@@ -107,21 +114,25 @@ void Figure::rotate( unsigned int index, glm::vec3 rotationVector, float angle )
 
 	auxVector = glm::vec4( figurePropierties.at( 0 + offset ).coordinates, 1.0f );
 	auxVector = rotationMatrix * auxVector;
-	figurePropierties.at( 0 + offset ).coordinates = { auxVector.x, auxVector.y, auxVector.z };
+	position = 0 + offset;
+	figurePropierties.at( position ).coordinates = { auxVector.x, auxVector.y, auxVector.z };
 
 	auxVector = glm::vec4( figurePropierties.at( 1 + offset ).coordinates, 1.0f );
 	auxVector = rotationMatrix * auxVector;
-	figurePropierties.at( 1 + offset ).coordinates = { auxVector.x, auxVector.y, auxVector.z };
+	position = 1 + offset;
+	figurePropierties.at( position ).coordinates = { auxVector.x, auxVector.y, auxVector.z };
 
 	auxVector = glm::vec4( figurePropierties.at( 2 + offset ).coordinates, 1.0f );
 	auxVector = rotationMatrix * auxVector;
-	figurePropierties.at( 2 + offset ).coordinates = { auxVector.x, auxVector.y, auxVector.z };
+	position = 2 + offset;
+	figurePropierties.at( position ).coordinates = { auxVector.x, auxVector.y, auxVector.z };
 
 
 	if( !isTriangle() ) {
 		auxVector = glm::vec4( figurePropierties.at( 3 + offset ).coordinates, 1.0f );
 		auxVector = rotationMatrix * auxVector;
-		figurePropierties.at( 3 + offset ).coordinates = { auxVector.x, auxVector.y, auxVector.z };
+		position = 3 + offset;
+		figurePropierties.at( position ).coordinates = { auxVector.x, auxVector.y, auxVector.z };
 	}
 }
 
