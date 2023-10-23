@@ -7,6 +7,9 @@
 #include <stdio.h>
 #include <iostream>
 
+#include "imgui/imgui.h"
+#include "imgui/imgui_impl_glfw_gl3.h"
+
 #include "Renderer.h"
 
 #include "VertexBuffer.h"
@@ -32,7 +35,7 @@ int main( void ) {
 		exit( EXIT_FAILURE );
 
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 4 );
-	glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 1 );
+	glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 4 );
 
 	window = glfwCreateWindow( WIDTH, HEIGHT, "Cuadro Abstracto", NULL, NULL );
 	if( !window ) {
@@ -89,6 +92,14 @@ int main( void ) {
 	Renderer renderer;
 
 	glPolygonMode( GL_FRONT, GL_FILL );
+
+	// Setup ImGui binding
+	ImGui::CreateContext();
+	ImGui_ImplGlfwGL3_Init( window, true );
+
+	// Setup style
+	ImGui::StyleColorsDark();
+
 	glm::mat4x4 projection, model, view;
 
 	int samplers[ 2 ] = { 0, 1 };
@@ -113,6 +124,8 @@ int main( void ) {
 
 			renderer.clear();
 
+			ImGui_ImplGlfwGL3_NewFrame();
+
 			glm::mat4 m( 1.0f );
 			//model = glm::rotate( m, ( float ) glfwGetTime(), glm::vec3( 1.0f ) );
 			model = m;
@@ -125,14 +138,25 @@ int main( void ) {
 			mainShader.setUniform1iv( "ourTextures", sizeof( samplers ), samplers );
 
 			renderer.draw( va, ib, mainShader );
-
-			GLCall( glfwSwapBuffers( window ) );
 		}
 
+		ImGui::Begin("Controls");
+		{
+			ImGui::Text( "Project 2" );
+
+		}
+		ImGui::End();
+
+		ImGui::Render();
+		ImGui_ImplGlfwGL3_RenderDrawData( ImGui::GetDrawData() );
+
+		GLCall( glfwSwapBuffers( window ) );
 		GLCall( glfwPollEvents() );
 	}
 
-	glfwDestroyWindow( window );
+	// Cleanup
+	ImGui_ImplGlfwGL3_Shutdown();
+	ImGui::DestroyContext();
 
 	glfwTerminate();
 	exit( EXIT_SUCCESS );
